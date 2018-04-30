@@ -1,0 +1,849 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+<html>
+<head>
+    <base href="http://www.chinaports.com:80/"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+    <title>船舶资料_船舶资料查询-中国港口网</title>
+    <meta content="船舶档案，船舶资料" name="keywords"/>
+    <meta content="船舶资料尽在中国港口网，为您免费提供30万条船舶资料，提供船名，船舶类型，IMO详细定位等船舶资料查询" name="description"/>
+    <link href="new-css/default.css" rel="stylesheet" />
+    <link href="new-css/pre-arrival.css" rel="stylesheet" />
+    <!--[if lte IE 9]>
+    <style>
+        .searchbox .weather{background:none;}
+        .portsQY ul li .QYmess { height: 96px;top:10px;}
+    </style>
+    <![endif]-->
+    <!--[if lte IE 7]>
+    <script type="text/javascript">
+        alert("您的IE浏览器版本太低,请升级您的IE浏览器至最新版本");
+    </script>
+    <![endif]-->
+  </head>
+
+  <body>
+  
+<script type="text/javascript" src="../new-js/jquery-1.8.2.min.js"></script>
+
+<script type="text/javascript">
+    $(function () {
+        $("#userShow").empty();
+        $.ajax({
+            type: "GET",
+            url: 'user/selectUsercod',
+            success: function (req) {
+                var userCod = req;
+                if (userCod != "null" && userCod != "") {
+                    $("#userShow").append('欢迎访问中国港口网！' + userCod + ' <a href="http://sso.chinaports.com/admin/index" target="_blank" style="color:#ff6600;">个人中心</a>&nbsp;<a href="javascript:;" onclick="logout();return false;">退出</a>');
+                    $("#loginShow").append('<a href="http://www.chinaports.com:80/containerTracker/portshipbefore" target="_blank" class="ccstyle fl">预到港</a><a href="http://www.chinaports.com:80/shipdata" target="_blank" class="ccstyle fl">船资料</a><a href="http://www.chinaports.com:80/containerTracker/portshipstate" target="_blank" class="ccstyle fl">船动态</a><a href="http://www.chinaports.com:80/photo/" target="_blank" class="ccstyle fl">船图片</a>');
+                } else {
+                    $("#userShow").append('欢迎访问中国港口网！<a href="http://www.chinaports.com:80/user/toLogin">请登录</a>&nbsp;&nbsp;<a href="http://sso.chinaports.com/admin/turnToRegist?state=chinaports" target="_blank"  class="signinbtn">注册</a>');
+                    $("#loginShow").append('<a href="http://www.chinaports.com:80/user/toLogin" class="ccstyle fl">预到港</a><a href="http://www.chinaports.com:80/user/toLogin" class="ccstyle fl">船资料</a><a href="http://www.chinaports.com:80/user/toLogin" class="ccstyle fl">船动态</a><a href="http://www.chinaports.com:80/user/toLogin" class="ccstyle fl">船图片</a>');
+                }
+            }
+        });
+    });
+
+    //退出系统
+    function logout() {
+        if (confirm("您确定退出系统吗？")) {
+            $.ajax({
+                type: "GET",
+                url: 'user/logout',
+                success: function (req) {
+                    delCookie("userCod");
+                    window.location.reload();
+                }
+            });
+        }
+    }
+
+
+
+    function delCookie(name)//删除cookie
+    {
+        var exp = new Date();
+        exp.setTime(exp.getTime() - 1);
+        var cval = getCookie(name);
+        if (cval != null) {
+            document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString();
+            document.cookie = name + "=" + cval + ";path=/;expires=" + exp.toGMTString();
+        }
+    }
+
+    /**
+     * 取cookie
+     * @param name
+     * @return
+     */
+    function getCookie(name)//取cookies函数
+    {
+        var arr = document.cookie.match(new RegExp("(^| )" + name + "=([^;]*)(;|$)"));
+        if (arr != null) return unescape(arr[2]);
+        return null;
+
+    }
+
+    function toRegist() {
+        window.parent.location.href = "http://sso.chinaports.com/admin/turnToRegist?state=chinaports";
+    }
+</script>
+<div class="header">
+    <div class="D_content">
+        <a target="_blank" id="hidden_a" style="height: 0px"></a>
+        <span class="fl" id="userShow">
+            </span>
+        <ul class="fr">
+            <li><a href="http://www.chinaports.com:80/" class="toindex">中国港口网</a></li>
+            <li><a href="user/userscoreinfo" class="vipservice" target="_blank">会员服务</a></li>
+            <li><a href="phone/mobile_android.jsp" class="tomobile" target="_blank">手机版</a></li>
+            <li><a href="service" target="_blank">关于我们</a></li>
+            <li><a href="map.jsp" target="_blank">网站地图</a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="searchbox">
+    <div class="D_content">
+        <a href="http://www.chinaports.com:80/" class="logo fl"><img src="new-images/logo.png"/></a>
+        <ul class="inputDiv">
+            <li class="cb">
+                <a href="javascript:;" class="searchstyle active">船位</a>
+                <a href="javascript:;" class="searchstyle">搜箱</a>
+                <a href="javascript:;" class="searchstyle">港口</a>
+                <a href="javascript:;" class="searchstyle">企业</a>
+                <a href="javascript:;" class="searchstyle">潮汐</a>
+                <a href="javascript:;" class="searchstyle">船图</a>
+            </li>
+            <li class="cb">
+                <input type="text" maxlength="30" id="searchinput" class="searchinput" placeholder="例如：海洋岛"/>
+                <input type="button" class="searchbtn" onclick="doSearchByType();" value="搜 索"/>
+            </li>
+        </ul>
+
+        <div class="fr">
+            <div>
+                <a href="/credit/credit_index.jsp" target="_blank">信用查询</a>
+                <a href="hcjs/logisticsState" target="_blank">物流状态</a>
+            </div>
+            <div>
+                <a href="hcjs/businessWebsiteList" target="_blank">行业网站</a>
+                <a target="_blank" href="http://www.chinaports.com:80/hcjs/getVoyageParam">航次评估</a>
+            </div>
+        </div>
+        <div style="float:left;width:160px;margin-left:10px;padding-top:30px;"><a href="ais/event" target="_blank" style="color:#ff6600;">免费卫星查船申请</a></div>
+    </div>
+</div>
+<div class="headLink">
+    <div class="D_content">
+        <div class="linkBox" id="loginShow">
+            <a href="http://www.chinaports.com/shiptracker/shipinit.do?method=toShiptracker" target="_blank"
+               class="fl chw">船位</a>
+        </div>
+        <div class="linkBox">
+            <a href="http://www.chinaports.com:80/portbusiness/" target="_blank" class="fl gk">港口</a>
+            <a href="http://www.chinaports.com:80/port/27/index" target="_blank" class="ccstyle fl">资料</a>
+            <a href="http://www.chinaports.com:80/thruput" target="_blank" class="ccstyle fl">吞吐量</a>
+            <a href="http://www.chinaports.com:80/portbusiness/34-null/" target="_blank" class="ccstyle fl">设施</a>
+            <a href="http://www.chinaports.com:80/chuanqibiao/" target="_blank" class="ccstyle fl">船期表</a>
+        </div>
+        <div class="linkBox xgzBox">
+            <a href="http://www.chinaports.com:80/containerTracker" target="_blank" class="fl xgz">箱跟踪</a>
+            <a href="http://www.chinaports.com:80/containerTracker" target="_blank" class="ccstyle fl">码　头</a>
+            <a href="http://www.chinaports.com:80/company/shipcontainer/search" target="_blank" class="ccstyle fl">船公司</a>
+        </div>
+        <div class="linkBox">
+            <a href="http://www.chinaports.com:80/portlspnews" target="_blank" class="fl xw">资讯</a>
+            <a href="http://www.chinaports.com:80/portlspnews/zhuanti-wuche" target="_blank" class="ccstyle fl">专题</a>
+            <a href="http://www.chinaports.com:80/portlspnews/1-20-1-null/query" target="_blank" class="ccstyle fl">物流</a>
+            <a href="http://www.chinaports.com:80/portlspnews/1-20-3-null/query" target="_blank" class="ccstyle fl">口岸</a>
+            <a href="http://www.chinaports.com:80/portlspnews/1-20-4-null/query" target="_blank" class="ccstyle fl">政策</a>
+        </div>
+        <div class="linkBox">
+            <a href="http://www.chinaports.com:80/company/jizhuangxiang/" target="_blank" class="fl qy">企业</a>
+            <a href="http://www.chinaports.com:80/company/chuandai/" target="_blank" class="ccstyle fl">船代</a>
+            <a href="http://www.chinaports.com:80/company/huodai/" target="_blank" class="ccstyle fl">货　代</a>
+            <a href="http://www.chinaports.com:80/company/0-matou/" target="_blank" class="ccstyle fl">港口</a>
+            <a href="http://www.chinaports.com:80/scompany/chuangongsi/" target="_blank" class="ccstyle fl">船公司</a>
+        </div>
+        <div class="linkBox">
+            <a href="http://www.chinaports.com:80/knowledge/1/20/base/query" target="_blank" class="fl zhsh">知识</a>
+            <a href="http://www.chinaports.com:80/knowledge/1/20/port/query" target="_blank" class="ccstyle fl">港口</a>
+            <a href="http://www.chinaports.com:80/knowledge/1/20/international/query" target="_blank" class="ccstyle fl">贸易</a>
+            <a href="http://www.chinaports.com:80/knowledge/1/20/law/query" target="_blank" class="ccstyle fl">法律</a>
+            <a href="http://www.chinaports.com:80/knowledge/1/20/tool/query" target="_blank" class="ccstyle fl">工具</a>
+        </div>
+        <div class="linkBox">
+            <a href="http://www.chinaports.com:80/products-soft/" target="_blank" class="fl rj">软件</a>
+            <a href="http://www.chinaports.com:80/products-soft/chuandairuanjian/#jsp_content" target="_blank"
+               class="ccstyle fl">船　代</a>
+            <a href="http://www.chinaports.com:80/products-soft/huodairuanjian/#jsp_content" target="_blank" class="ccstyle fl">货代</a>
+            <a href="http://www.chinaports.com:80/products-soft/chuangongsi/#jsp_content" target="_blank" class="ccstyle fl">船公司</a>
+            <a href="http://www.chinaports.com:80/products-soft/chedui/#jsp_content" target="_blank" class="ccstyle fl">车队</a>
+        </div>
+        <div class="linkBox shchBox">
+            <a href="http://www.chinaports.com:80/wuliu" target="_blank" class="fl shch">市场</a>
+            <a href="http://www.chinaports.com:80/shipsd/1/null/query" target="_blank" class="ccstyle fl">船盘</a>
+            <a href="http://www.chinaports.com:80/cargo/1/null/query" target="_blank" class="ccstyle fl">货盘</a>
+            <a href="http://www.chinaports.com:80/car/1/null/query" target="_blank" class="ccstyle fl">车源</a>
+            <a href="http://www.chinaports.com:80/logisticHR/1/null/query" target="_blank" class="ccstyle fl">人才</a>
+        </div>
+    </div>
+</div>
+<!-- 以上样式在public中 -->
+<script src="new-js/actionzzc.js"></script>
+<script type="text/javascript">
+    var searchType = 0;
+    var defaultSearchParam = '海洋岛';
+    //搜索条件选择
+    $(".inputDiv .searchstyle").each(function (index, e) {
+        $(this).click(function () {
+            if (!$(this).hasClass("active")) {
+                $(".searchstyle").removeClass("active")
+                $(this).addClass("active");
+            }
+            selectType(index);
+        });
+    });
+
+    //选择首页标签
+    function selectType(type) {
+
+        var value = "";
+        searchType = type;
+        if (type == 0) {
+            value = "例如：海洋岛";
+            defaultSearchParam = '海洋岛';
+        }
+        else if (type == 1) {
+            value = "提示：请输入提单号";
+            defaultSearchParam = '';
+        }
+        else if (type == 2) {
+            value = "例如：烟台";
+            defaultSearchParam = '烟台';
+        }
+        else if (type == 3) {
+            value = "例如：航华";
+            defaultSearchParam = '航华';
+        }
+        else if (type == 4) {
+            value = "例如：丹东";
+            defaultSearchParam = '丹东';
+        }
+        else if (type == 5) {
+            value = "例如：DONG TING HU";
+            defaultSearchParam = 'DONG TING HU';
+        }
+        $("#searchinput").val('').attr('placeholder', value);
+    }
+
+    function doSearchByType() {
+        var type = searchType;
+        var baseURL = "http://www.chinaports.com/shiptracker/shipinit.do?method=toShiptracker&url=,http://www.chinaports.com/company/,http://www.chinaports.com/company/port/1/20/,http://www.chinaports.com/company/wuliu/1/10/,http://www.chinaports.com/chaoxi/,http://www.chinaports.com/shiptracker/shipdata.do?method=shipimglist".split(',');
+        var value = $("#searchinput").val();
+//        value = value.replace("例如：","").replace("提示：请输入提单号","");
+
+        var url = baseURL[parseInt(type)];
+        if (type == '0') {
+            url = url + encodeURIComponent("shipinit.do?method=forIndex&shipall=" + encodeURIComponent(value));
+            document.getElementById('hidden_a').href = url;
+            document.getElementById('hidden_a').click();
+        } else {
+            if (type == '1') {
+                if (value == '') {
+                    value = "null";
+                }
+                url += value + "/null/search";
+            }
+            if (type == '2') {
+                if (value == '') {
+                    value = "null";
+                }
+                url += value + "/0/query";
+            }
+            if (type == '3') {
+                if (value == '') {
+                    value = "null";
+                }
+                url += value + "/0-0-0/query";
+            }
+            if (type == '4') {
+                if (value == '') {
+                    value = "null";
+                }
+                url += value;
+            }
+            if (type == '5') {
+                url += "&shipname=" + value;
+            }
+            document.getElementById('hidden_a').href = encodeURI(url);
+            document.getElementById('hidden_a').click();
+        }
+
+    }
+
+    document.onkeydown = function (event) {
+        var e = event || window.event || arguments.callee.caller.arguments[0];
+
+        if (e && e.keyCode == 13) { // enter 键
+            //要做的事情
+            doSearchByType();
+        }
+    };
+
+    function openLogin() {
+        var url = 'user/toLogin?url=' + window.location.pathname;
+        window.location.href = url;
+    }
+</script>
+  <a id="searchship"></a>
+  <section>
+      <div class="shipcontent">
+          <div class="banner">
+              <div class="bannerpics">
+                  <p>
+                      <a href="javascript:;"><img src="new-images/celebrate.jpg" /></a>
+                  </p>
+                  <p>
+                      <a href="javascript:;"><img src="new-images/celebrate.jpg" /></a>
+                  </p>
+                  <ul>
+                      <li class="focus"></li>
+                      <li></li>
+                  </ul>
+              </div>
+              <a href="javascript:;" class="closebtn" title="关闭"></a>
+          </div>
+          <div class="presentPosition">当前位置：<a href="http://www.chinaports.com:80/">中国港口网</a> > <a href="shipdata/">船舶资料</a> </div>
+          <div class="secondSeachbox">
+              <div class="web-arrival-left">
+                  <table cellpadding="0" cellspacing="0" width="100%" border="0">
+                      <tr>
+                          <td width="67">英文船名</td>
+                          <td width="180"><input type="text"  name="ename"  class="web-width180" placeholder="英文船名" id="ename" value="null"/></td>
+                          <td width="67">中文船名</td>
+                          <td width="180"><input type="text" name="cname" class="web-width180" placeholder="中文船名"  id="cname" value="null"/></td>
+                          <td width="44">国籍</td>
+                          <td width="180"><input type="text"  class="web-width180" placeholder="国籍"  id="country" value="null" /></td>
+                          <td width="67">船舶类型</td>
+                          <td width="180">
+                              <select class="" id="type">
+                                  <option value="null" >所有</option>
+                                  <option value="客船" >客船</option>
+                                  <option value="货船" >货船</option>
+                                  <option value="油轮" >油轮</option>
+                                  <option value="拖轮" >拖轮</option>
+                                  <option value="执法" >执法船</option>
+                                  <option value="引航" >引航船</option>
+                                  <option value="搜救" >搜救船</option>
+                                  <option value="高速" >高速船</option>
+                              </select>
+                          </td>
+                          <td align="right"><input type="button" class="secSeachBTN" value="查 询"   onclick="doSearch();" /></td>
+                      </tr>
+                  </table>
+              </div>
+          </div>
+          <div class="web-container-ydg web-container-ydg-blue margintop15">
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                      <th scope="col" width="15%" height="36"><b>英文船名</b></th>
+                      <th scope="col" width="15%"><b>中文船名</b></th>
+                      <th scope="col" width="10%"><b>国籍</b></th>
+                      <th scope="col" width="10%"><b>船舶类型</b></th>
+                      <th scope="col" width="15%"><b>呼号</b></th>
+                      <th scope="col" width="10%"><b>IMO</b></th>
+                      <th scope="col" width="15%"><b>详细资料</b></th>
+                      <th scope="col" width="10%"><b>操作</b></th>
+                  </tr>
+                  
+                  <tr>
+                      <td title="0123456"><a  href="shipdata/440350000/view" target="_blank">0123456</a></td>
+                      <td title="思博公主"><a href="shipdata/440350000/view"target="_blank"><span class="web-font-oriage">思博公主</span></a></td>
+                      <td title="Korea (South)">Korea (South)</td>
+                      <td title="货船">货船</td>
+                      <td title="1A542">1A542</td>
+                      <td title="9134476">9134476</td>
+                      <td  title="点击查看船舶资料"><a class="web-font-red" href="shipdata/440350000/view" target="_blank">船舶资料</a></td>
+                      <td  title="点击定位船舶"><a href="javascript:void(0);" onclick="highlightShip('440350000')">高亮</a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="showShip('440350000')" >定位</a></td>
+                  </tr>
+                  
+                  <tr>
+                      <td title="03006"><a  href="shipdata/412303006/view" target="_blank">03006</a></td>
+                      <td title="中港拖702"><a href="shipdata/412303006/view"target="_blank"><span class="web-font-oriage">中港拖702</span></a></td>
+                      <td title="China">China</td>
+                      <td title="其他">其他</td>
+                      <td title="FF">FF</td>
+                      <td title="9592355">9592355</td>
+                      <td  title="点击查看船舶资料"><a class="web-font-red" href="shipdata/412303006/view" target="_blank">船舶资料</a></td>
+                      <td  title="点击定位船舶"><a href="javascript:void(0);" onclick="highlightShip('412303006')">高亮</a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="showShip('412303006')" >定位</a></td>
+                  </tr>
+                  
+                  <tr>
+                      <td title="0978H1PCAQP A5L D8"><a  href="shipdata/413760568/view" target="_blank">0978H1PCAQP A5L D8</a></td>
+                      <td title="皖淮南货0969"><a href="shipdata/413760568/view"target="_blank"><span class="web-font-oriage">皖淮南货0969</span></a></td>
+                      <td title=""></td>
+                      <td title="货船">货船</td>
+                      <td title="NAN HUO">NAN HUO</td>
+                      <td title="32">32</td>
+                      <td  title="点击查看船舶资料"><a class="web-font-red" href="shipdata/413760568/view" target="_blank">船舶资料</a></td>
+                      <td  title="点击定位船舶"><a href="javascript:void(0);" onclick="highlightShip('413760568')">高亮</a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="showShip('413760568')" >定位</a></td>
+                  </tr>
+                  
+                  <tr>
+                      <td title="12436"><a  href="shipdata/413888869/view" target="_blank">12436</a></td>
+                      <td title="海巡0863"><a href="shipdata/413888869/view"target="_blank"><span class="web-font-oriage">海巡0863</span></a></td>
+                      <td title=""></td>
+                      <td title="其他">其他</td>
+                      <td title="JSMSA">JSMSA</td>
+                      <td title="8041814">8041814</td>
+                      <td  title="点击查看船舶资料"><a class="web-font-red" href="shipdata/413888869/view" target="_blank">船舶资料</a></td>
+                      <td  title="点击定位船舶"><a href="javascript:void(0);" onclick="highlightShip('413888869')">高亮</a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="showShip('413888869')" >定位</a></td>
+                  </tr>
+                  
+                  <tr>
+                      <td title="18888"><a  href="shipdata/412300001/view" target="_blank">18888</a></td>
+                      <td title="海发5号"><a href="shipdata/412300001/view"target="_blank"><span class="web-font-oriage">海发5号</span></a></td>
+                      <td title=""></td>
+                      <td title="其他">其他</td>
+                      <td title="18888">18888</td>
+                      <td title="1345692">1345692</td>
+                      <td  title="点击查看船舶资料"><a class="web-font-red" href="shipdata/412300001/view" target="_blank">船舶资料</a></td>
+                      <td  title="点击定位船舶"><a href="javascript:void(0);" onclick="highlightShip('412300001')">高亮</a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="showShip('412300001')" >定位</a></td>
+                  </tr>
+                  
+                  <tr>
+                      <td title="193WHPM"><a  href="shipdata/412303010/view" target="_blank">193WHPM</a></td>
+                      <td title="蓬莱19-3WHPM"><a href="shipdata/412303010/view"target="_blank"><span class="web-font-oriage">蓬莱19-3WHPM</span></a></td>
+                      <td title=""></td>
+                      <td title="油轮">油轮</td>
+                      <td title="BFAM8">BFAM8</td>
+                      <td title="939524736">939524736</td>
+                      <td  title="点击查看船舶资料"><a class="web-font-red" href="shipdata/412303010/view" target="_blank">船舶资料</a></td>
+                      <td  title="点击定位船舶"><a href="javascript:void(0);" onclick="highlightShip('412303010')">高亮</a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="showShip('412303010')" >定位</a></td>
+                  </tr>
+                  
+                  <tr>
+                      <td title="300"><a  href="shipdata/412700780/view" target="_blank">300</a></td>
+                      <td title="成功85"><a href="shipdata/412700780/view"target="_blank"><span class="web-font-oriage">成功85</span></a></td>
+                      <td title=""></td>
+                      <td title="其他">其他</td>
+                      <td title="BVLX2">BVLX2</td>
+                      <td title="134217728">134217728</td>
+                      <td  title="点击查看船舶资料"><a class="web-font-red" href="shipdata/412700780/view" target="_blank">船舶资料</a></td>
+                      <td  title="点击定位船舶"><a href="javascript:void(0);" onclick="highlightShip('412700780')">高亮</a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="showShip('412700780')" >定位</a></td>
+                  </tr>
+                  
+                  <tr>
+                      <td title="3113"><a  href="shipdata/412900000/view" target="_blank">3113</a></td>
+                      <td title="龙兴岛"><a href="shipdata/412900000/view"target="_blank"><span class="web-font-oriage">龙兴岛</span></a></td>
+                      <td title="China">China</td>
+                      <td title="其他">其他</td>
+                      <td title="1778">1778</td>
+                      <td title="9517317">9517317</td>
+                      <td  title="点击查看船舶资料"><a class="web-font-red" href="shipdata/412900000/view" target="_blank">船舶资料</a></td>
+                      <td  title="点击定位船舶"><a href="javascript:void(0);" onclick="highlightShip('412900000')">高亮</a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="showShip('412900000')" >定位</a></td>
+                  </tr>
+                  
+                  <tr>
+                      <td title="413762096"><a  href="shipdata/413762096/view" target="_blank">413762096</a></td>
+                      <td title="皖兴达161"><a href="shipdata/413762096/view"target="_blank"><span class="web-font-oriage">皖兴达161</span></a></td>
+                      <td title=""></td>
+                      <td title="货船">货船</td>
+                      <td title=""></td>
+                      <td title="2720256">2720256</td>
+                      <td  title="点击查看船舶资料"><a class="web-font-red" href="shipdata/413762096/view" target="_blank">船舶资料</a></td>
+                      <td  title="点击定位船舶"><a href="javascript:void(0);" onclick="highlightShip('413762096')">高亮</a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="showShip('413762096')" >定位</a></td>
+                  </tr>
+                  
+                  <tr>
+                      <td title="4 FU YUAN"><a  href="shipdata/412468720/view" target="_blank">4 FU YUAN</a></td>
+                      <td title="兴航169"><a href="shipdata/412468720/view"target="_blank"><span class="web-font-oriage">兴航169</span></a></td>
+                      <td title=""></td>
+                      <td title="货船">货船</td>
+                      <td title="IW9">IW9</td>
+                      <td title="859829235">859829235</td>
+                      <td  title="点击查看船舶资料"><a class="web-font-red" href="shipdata/412468720/view" target="_blank">船舶资料</a></td>
+                      <td  title="点击定位船舶"><a href="javascript:void(0);" onclick="highlightShip('412468720')">高亮</a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="showShip('412468720')" >定位</a></td>
+                  </tr>
+                  
+                  <tr>
+                      <td title="6"><a  href="shipdata/412338000/view" target="_blank">6</a></td>
+                      <td title="银能"><a href="shipdata/412338000/view"target="_blank"><span class="web-font-oriage">银能</span></a></td>
+                      <td title="China">China</td>
+                      <td title="拖轮">拖轮</td>
+                      <td title="000000">000000</td>
+                      <td title="9397705">9397705</td>
+                      <td  title="点击查看船舶资料"><a class="web-font-red" href="shipdata/412338000/view" target="_blank">船舶资料</a></td>
+                      <td  title="点击定位船舶"><a href="javascript:void(0);" onclick="highlightShip('412338000')">高亮</a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="showShip('412338000')" >定位</a></td>
+                  </tr>
+                  
+                  <tr>
+                      <td title="61229"><a  href="shipdata/412461290/view" target="_blank">61229</a></td>
+                      <td title="南海六号"><a href="shipdata/412461290/view"target="_blank"><span class="web-font-oriage">南海六号</span></a></td>
+                      <td title="China">China</td>
+                      <td title="其他">其他</td>
+                      <td title="0000000">0000000</td>
+                      <td title="8752738">8752738</td>
+                      <td  title="点击查看船舶资料"><a class="web-font-red" href="shipdata/412461290/view" target="_blank">船舶资料</a></td>
+                      <td  title="点击定位船舶"><a href="javascript:void(0);" onclick="highlightShip('412461290')">高亮</a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="showShip('412461290')" >定位</a></td>
+                  </tr>
+                  
+                  <tr>
+                      <td title="78789"><a  href="shipdata/412326000/view" target="_blank">78789</a></td>
+                      <td title="马泉海"><a href="shipdata/412326000/view"target="_blank"><span class="web-font-oriage">马泉海</span></a></td>
+                      <td title=""></td>
+                      <td title="其他">其他</td>
+                      <td title="55000">55000</td>
+                      <td title="1">1</td>
+                      <td  title="点击查看船舶资料"><a class="web-font-red" href="shipdata/412326000/view" target="_blank">船舶资料</a></td>
+                      <td  title="点击定位船舶"><a href="javascript:void(0);" onclick="highlightShip('412326000')">高亮</a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="showShip('412326000')" >定位</a></td>
+                  </tr>
+                  
+                  <tr>
+                      <td title="78 THANHTUYEN A27"><a  href="shipdata/123456000/view" target="_blank">78 THANHTUYEN A27</a></td>
+                      <td title="准兴2"><a href="shipdata/123456000/view"target="_blank"><span class="web-font-oriage">准兴2</span></a></td>
+                      <td title="China">China</td>
+                      <td title="其他">其他</td>
+                      <td title="RPS">RPS</td>
+                      <td title="9000008">9000008</td>
+                      <td  title="点击查看船舶资料"><a class="web-font-red" href="shipdata/123456000/view" target="_blank">船舶资料</a></td>
+                      <td  title="点击定位船舶"><a href="javascript:void(0);" onclick="highlightShip('123456000')">高亮</a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="showShip('123456000')" >定位</a></td>
+                  </tr>
+                  
+                  <tr>
+                      <td title="8 DH"><a  href="shipdata/413888896/view" target="_blank">8 DH</a></td>
+                      <td title="海巡0806"><a href="shipdata/413888896/view"target="_blank"><span class="web-font-oriage">海巡0806</span></a></td>
+                      <td title=""></td>
+                      <td title="其他">其他</td>
+                      <td title="23">23</td>
+                      <td title="39">39</td>
+                      <td  title="点击查看船舶资料"><a class="web-font-red" href="shipdata/413888896/view" target="_blank">船舶资料</a></td>
+                      <td  title="点击定位船舶"><a href="javascript:void(0);" onclick="highlightShip('413888896')">高亮</a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="showShip('413888896')" >定位</a></td>
+                  </tr>
+                  
+                  <tr>
+                      <td title="999"><a  href="shipdata/413888833/view" target="_blank">999</a></td>
+                      <td title="海巡0850"><a href="shipdata/413888833/view"target="_blank"><span class="web-font-oriage">海巡0850</span></a></td>
+                      <td title=""></td>
+                      <td title="货船">货船</td>
+                      <td title="TSTAISB">TSTAISB</td>
+                      <td title="8060512">8060512</td>
+                      <td  title="点击查看船舶资料"><a class="web-font-red" href="shipdata/413888833/view" target="_blank">船舶资料</a></td>
+                      <td  title="点击定位船舶"><a href="javascript:void(0);" onclick="highlightShip('413888833')">高亮</a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="showShip('413888833')" >定位</a></td>
+                  </tr>
+                  
+                  <tr>
+                      <td title="ACACIA LIBRA"><a  href="shipdata/477541900/view" target="_blank">ACACIA LIBRA</a></td>
+                      <td title="泛亚京都"><a href="shipdata/477541900/view"target="_blank"><span class="web-font-oriage">泛亚京都</span></a></td>
+                      <td title="Hong Kong">Hong Kong</td>
+                      <td title="货船">货船</td>
+                      <td title="VRFL8">VRFL8</td>
+                      <td title="9338307">9338307</td>
+                      <td  title="点击查看船舶资料"><a class="web-font-red" href="shipdata/477541900/view" target="_blank">船舶资料</a></td>
+                      <td  title="点击定位船舶"><a href="javascript:void(0);" onclick="highlightShip('477541900')">高亮</a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="showShip('477541900')" >定位</a></td>
+                  </tr>
+                  
+                  <tr>
+                      <td title="ACE TRANSIA"><a  href="shipdata/441803000/view" target="_blank">ACE TRANSIA</a></td>
+                      <td title="橙西王"><a href="shipdata/441803000/view"target="_blank"><span class="web-font-oriage">橙西王</span></a></td>
+                      <td title="Korea, Republic of">Korea, Republic of</td>
+                      <td title="油轮">油轮</td>
+                      <td title="DSRE7">DSRE7</td>
+                      <td title="9016466">9016466</td>
+                      <td  title="点击查看船舶资料"><a class="web-font-red" href="shipdata/441803000/view" target="_blank">船舶资料</a></td>
+                      <td  title="点击定位船舶"><a href="javascript:void(0);" onclick="highlightShip('441803000')">高亮</a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="showShip('441803000')" >定位</a></td>
+                  </tr>
+                  
+                  <tr>
+                      <td title="ACHILLEUS"><a  href="shipdata/248954000/view" target="_blank">ACHILLEUS</a></td>
+                      <td title="阿奇力"><a href="shipdata/248954000/view"target="_blank"><span class="web-font-oriage">阿奇力</span></a></td>
+                      <td title="Greece">Greece</td>
+                      <td title="货船">货船</td>
+                      <td title="9HWT6">9HWT6</td>
+                      <td title="9228021">9228021</td>
+                      <td  title="点击查看船舶资料"><a class="web-font-red" href="shipdata/248954000/view" target="_blank">船舶资料</a></td>
+                      <td  title="点击定位船舶"><a href="javascript:void(0);" onclick="highlightShip('248954000')">高亮</a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="showShip('248954000')" >定位</a></td>
+                  </tr>
+                  
+                  <tr>
+                      <td title="ACRUX N"><a  href="shipdata/209830000/view" target="_blank">ACRUX N</a></td>
+                      <td title="1809"><a href="shipdata/209830000/view"target="_blank"><span class="web-font-oriage">1809</span></a></td>
+                      <td title="Cyprus">Cyprus</td>
+                      <td title="货船">货船</td>
+                      <td title="5BTJ3">5BTJ3</td>
+                      <td title="9433066">9433066</td>
+                      <td  title="点击查看船舶资料"><a class="web-font-red" href="shipdata/209830000/view" target="_blank">船舶资料</a></td>
+                      <td  title="点击定位船舶"><a href="javascript:void(0);" onclick="highlightShip('209830000')">高亮</a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="showShip('209830000')" >定位</a></td>
+                  </tr>
+                  
+              </table>
+              <div class="page">
+                  
+                      <a href="javascript:;" class="num active">1</a>
+                      
+                          <a href="shipdata/2/20/null/null/null/null/null/query">2</a>
+                      
+                      
+                          <a href="shipdata/3/20/null/null/null/null/null/query">3</a>
+                      
+                      
+                          <a href="shipdata/4/20/null/null/null/null/null/query">4</a>
+                      
+                      
+                          <a href="shipdata/5/20/null/null/null/null/null/query">5</a>
+                      
+                      
+                          
+                              <a href="shipdata/2/20/null/null/null/null/null/query">下一页</a>
+                              <a href="shipdata/52940/20/null/null/null/null/null/query">最后一页</a>
+                          
+                      
+                  
+                  
+                  
+                  
+                      共52940页  1058803条
+                      　至 <input type="text" id="input_page" class="input_page" maxlength="5"/> 页
+                      <input type="button" id="turn_btn"
+                             onclick="turnToInputpage('52940','null','null','null','null','null')"
+                             class="turn_btn" value="跳转"/>
+                  
+              </div>
+          </div>
+          <a name="jsp_content"></a>
+          <div id="map" style="height:378px;padding-top:3px;">
+              <iframe id="myframe" src="" style="width:100%; height:100%;padding:0px;margin:0px;border:0px;" frameborder="0">
+
+              </iframe>
+          </div>
+      </div>
+  </section>
+  
+<script type="text/javascript">
+</script>
+
+<!-- 浮窗 floatbox-->
+<div class="webright-window">
+    <a class="webright1" href="http://www.chinaports.com/shiptracker/shipinit.do?method=toShiptracker" target="_blank">船舶跟踪</a>
+    <a class="webright2" href="chuanqibiao/1-null-null-quay/" target="_blank">码头船期</a>
+    <a class="webright3" href="containerTracker/" target="_blank">箱跟踪</a>
+    <a class="webright4" href="portbusiness/" target="_blank">港口查询</a>
+    <a class="webright5" href="thruput" target="_blank">吞吐量</a>
+    <a class="webright6" href="changjiang/tide" target="_blank">长江水位</a>
+    <a class="webright7" href="changjiang/weather" target="_blank">长江天气</a>
+    <a class="webright8" href="chaoxi" target="_blank">潮汐表</a>
+</div>
+
+<div class="footer" style="position:relative;">
+    <div class="shipcontent footbox">
+        <ul class="fl">
+            <li class="cantchoose">QQ服务群</li>
+            <li><a target="_blank" rel="nofollow" href="http://shang.qq.com/wpa/qunwpa?idkey=2309237ffed3098e864ece877fc8c1d766dc15329a3ae309d321fd24ad62aac0">船代货代群</a></li>
+            <li><a target="_blank" rel="nofollow" href="http://shang.qq.com/wpa/qunwpa?idkey=8522eb5c25439a884ecc3b4d1bdda55f49d10d1d0a7bbc29126bf23e3ec7f5ec">集装箱跟踪群</a></li>
+            <li><a target="_blank"  rel="nofollow" href="http://shang.qq.com/wpa/qunwpa?idkey=28920b68dd15ec731a10653faca3bead298251b8ca3b537f367c80b0189e2aa4">船舶跟踪群</a></li>
+            <li><a target="_blank"   rel="nofollow" href="http://shang.qq.com/wpa/qunwpa?idkey=bb01b9190c1ac7778ba07db15a0c4240c2aa3fb3394745ede1d0ed022a55f9bc">船舶数据群</a></li>
+            <li><a target="_blank"  rel="nofollow" href="http://shang.qq.com/wpa/qunwpa?idkey=7e0f669ca5798d95fff67ff0c81968409070814137703fcda652257ab77ba7dd">中国港口网群</a></li>
+        </ul>
+        <ul class="fl">
+            <li class="cantchoose" target="_blank">关于我们</li>
+            <li><a href="service" target="_blank">关于我们</a></li>
+            <li><a href="adservice.jsp" target="_blank">服务条款</a></li>
+            <li><a href="law.jsp" target="_blank">法律声明</a></li>
+            <li><a href="map.jsp" target="_blank">网站地图</a></li>
+            <li><a href="link" target="_blank">友情链接</a></li>
+        </ul>
+        <ul class="fl">
+            <li class="cantchoose">联系我们</li>
+            <li>服务热线：0535-6920817</li>
+            <li>地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址：山东烟台芝罘区朝阳街80号绮丽大厦3楼华东数据
+            </li>
+            <li>技术支持：烟台华东数据科技有限公司</li>
+        </ul>
+        <ul class="fl contactusul">
+            <li class="cantchoose">欢迎关注我们</li>
+            <li class="erweima"><img src="/images/erweima.gif" /></li>
+        </ul>
+        <div style="clear: both"></div>
+    </div>
+    <div class="beianhao">鲁ICP备05016100&nbsp;&nbsp;经营许可证：鲁B2-20170088<script src="http://s23.cnzz.com/stat.php?id=3453251&web_id=3453251&show=pic1" language="JavaScript"></script>
+        <script type="text/javascript">
+            var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+            document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F112cc63ae7d0082ab4d30ec2c3a16614' type='text/javascript'%3E%3C/script%3E"));
+        </script></div>
+    <div style="position: absolute;margin-left:180px;bottom:0;width:260px;left:50%;">
+        <p style="vertical-align: middle;">
+            
+           
+        </p>
+    </div>
+</div>
+
+  <script src="/js/show-ship-map.js"></script>
+  </body>
+<script type="text/javascript">
+    var china_ports_shiptrackar_url = "http://www.chinaports.com/shiptracker/olv3/shipport.jsp";
+    mmsisVar = "";
+    //初始化
+    $(function (){
+        var sename=$("#ename").val();
+        var scname=$("#cname").val();
+        var scountry=$("#country").val();
+        if(sename == "null" || sename == null){$("#ename").val("")}
+        if(scname == "null" || scname == null){$("#cname").val("")}
+        if(scountry == "null" || scountry == null){$("#country").val("")}
+
+        
+        if("0" > 0){
+            mmsisVar += ",";
+        }
+        mmsisVar += "440350000";
+        
+        if("1" > 0){
+            mmsisVar += ",";
+        }
+        mmsisVar += "412303006";
+        
+        if("2" > 0){
+            mmsisVar += ",";
+        }
+        mmsisVar += "413760568";
+        
+        if("3" > 0){
+            mmsisVar += ",";
+        }
+        mmsisVar += "413888869";
+        
+        if("4" > 0){
+            mmsisVar += ",";
+        }
+        mmsisVar += "412300001";
+        
+        if("5" > 0){
+            mmsisVar += ",";
+        }
+        mmsisVar += "412303010";
+        
+        if("6" > 0){
+            mmsisVar += ",";
+        }
+        mmsisVar += "412700780";
+        
+        if("7" > 0){
+            mmsisVar += ",";
+        }
+        mmsisVar += "412900000";
+        
+        if("8" > 0){
+            mmsisVar += ",";
+        }
+        mmsisVar += "413762096";
+        
+        if("9" > 0){
+            mmsisVar += ",";
+        }
+        mmsisVar += "412468720";
+        
+        if("10" > 0){
+            mmsisVar += ",";
+        }
+        mmsisVar += "412338000";
+        
+        if("11" > 0){
+            mmsisVar += ",";
+        }
+        mmsisVar += "412461290";
+        
+        if("12" > 0){
+            mmsisVar += ",";
+        }
+        mmsisVar += "412326000";
+        
+        if("13" > 0){
+            mmsisVar += ",";
+        }
+        mmsisVar += "123456000";
+        
+        if("14" > 0){
+            mmsisVar += ",";
+        }
+        mmsisVar += "413888896";
+        
+        if("15" > 0){
+            mmsisVar += ",";
+        }
+        mmsisVar += "413888833";
+        
+        if("16" > 0){
+            mmsisVar += ",";
+        }
+        mmsisVar += "477541900";
+        
+        if("17" > 0){
+            mmsisVar += ",";
+        }
+        mmsisVar += "441803000";
+        
+        if("18" > 0){
+            mmsisVar += ",";
+        }
+        mmsisVar += "248954000";
+        
+        if("19" > 0){
+            mmsisVar += ",";
+        }
+        mmsisVar += "209830000";
+        
+
+        // 地图显示当页船舶信息
+        init_shipstatus();
+    });
+    function doSearch()
+    {
+        var ename=$("#ename").val();
+        var cname=$("#cname").val();
+        var country=$("#country").val();
+        var type=$("#type").val();
+        if(ename==''||ename==null){
+            ename = 'null';
+        }
+        if(cname==''||cname==null){
+            cname = 'null';
+        }
+        if(country==''||country==null){
+            country = 'null';
+        }
+        if(type==''||type==null){
+            type = 'null';
+        }
+        var a=document.getElementById("searchship");
+        a.href="shipdata/1/20/"+ename+"/"+cname+"/"+country+"/"+type+"/null/query";
+        a.click();
+    }
+
+    function turnToInputpage(total,ename,cname,country,type,all) {
+        var input_page = $("#input_page").val();
+        var reg = new RegExp("^[0-9]*$");
+
+        if (!reg.test(input_page) || input_page == "") {
+            alert("请输入数字!");
+            return false;
+        }
+        if (Number(input_page) > Number(total)) {
+            alert("输入数字不能大于页面总数!");
+            return false;
+        }
+
+        var url = encodeURI("shipdata/"+input_page+"/20/"+ename+"/"+cname+"/"+country+"/"+type+"/"+all+"/query");
+        window.location="http://www.chinaports.com:80/"+url;
+
+    }
+</script>
+</html>
